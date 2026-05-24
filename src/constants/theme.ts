@@ -26,6 +26,87 @@ export const Colors = {
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
+/**
+ * Wordle-specific palette for tiles, keys, and their text/border colors.
+ * Indexed by 'light' | 'dark' to match the rest of this module.
+ *
+ * Tile states:
+ *   - empty:            no letter typed yet
+ *   - filledUnrevealed: a letter is in the current row but not yet submitted/revealed
+ *   - correct/present/absent: post-evaluation colors (canonical Wordle palette)
+ *
+ * Key states:
+ *   - unused/correct/present/absent: aggregated keyboard hint colors
+ */
+export const WordleColors = {
+  light: {
+    tile: {
+      emptyBackground: '#ffffff',
+      emptyBorder: '#d3d6da',
+      filledUnrevealedBackground: '#ffffff',
+      filledUnrevealedBorder: '#878a8c',
+      correctBackground: '#6aaa64',
+      presentBackground: '#c9b458',
+      absentBackground: '#787c7e',
+      emptyText: '#1a1a1b',
+      filledUnrevealedText: '#1a1a1b',
+      revealedText: '#ffffff',
+    },
+    key: {
+      unusedBackground: '#d3d6da',
+      correctBackground: '#6aaa64',
+      presentBackground: '#c9b458',
+      absentBackground: '#787c7e',
+      unusedText: '#1a1a1b',
+      revealedText: '#ffffff',
+    },
+    banner: {
+      infoBackground: '#1a1a1b',
+      infoText: '#ffffff',
+      errorBackground: '#b03a2e',
+      errorText: '#ffffff',
+    },
+    restartButton: {
+      background: '#1a1a1b',
+      text: '#ffffff',
+    },
+  },
+  dark: {
+    tile: {
+      emptyBackground: '#121213',
+      emptyBorder: '#3a3a3c',
+      filledUnrevealedBackground: '#121213',
+      filledUnrevealedBorder: '#565758',
+      correctBackground: '#538d4e',
+      presentBackground: '#b59f3b',
+      absentBackground: '#3a3a3c',
+      emptyText: '#ffffff',
+      filledUnrevealedText: '#ffffff',
+      revealedText: '#ffffff',
+    },
+    key: {
+      unusedBackground: '#818384',
+      correctBackground: '#538d4e',
+      presentBackground: '#b59f3b',
+      absentBackground: '#3a3a3c',
+      unusedText: '#ffffff',
+      revealedText: '#ffffff',
+    },
+    banner: {
+      infoBackground: '#ffffff',
+      infoText: '#121213',
+      errorBackground: '#d96459',
+      errorText: '#121213',
+    },
+    restartButton: {
+      background: '#ffffff',
+      text: '#121213',
+    },
+  },
+} as const;
+
+export type WordleColorScheme = (typeof WordleColors)['light'];
+
 export const Fonts = Platform.select({
   ios: {
     /** iOS `UIFontDescriptorSystemDesignDefault` */

@@ -41,3 +41,8 @@ example
 # generated native folders
 /ios
 /android
+
+# orchestrator-only verification artifacts (referenced in PROGRESS.md, not source)
+.phase2-screenshots/
+.phase3-screenshots/
+.phase4-screenshots/

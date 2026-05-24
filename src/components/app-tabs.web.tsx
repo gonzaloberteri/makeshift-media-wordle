@@ -27,6 +27,11 @@ export default function AppTabs() {
           <TabTrigger name="explore" href="/explore" asChild>
             <TabButton>Explore</TabButton>
           </TabTrigger>
+          {__DEV__ && (
+            <TabTrigger name="dev-preview" href="/dev/components-preview" asChild>
+              <TabButton>Preview</TabButton>
+            </TabTrigger>
+          )}
         </CustomTabList>
       </TabList>
     </Tabs>
