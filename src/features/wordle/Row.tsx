@@ -12,22 +12,17 @@ export type RowTile = {
 
 export type RowProps = {
   rowIndex: number;
-  tiles: RowTile[]; // length === wordLength
-  /** No-op stub in Phase 2; Phase 3 wires shake animation. */
+  tiles: RowTile[];
+  /** Phase 3 scope-cut: shake animation dropped; prop kept for stable API. */
   shouldShake?: boolean;
-  /** Marker for current/active row; presentational only in Phase 2. */
   isCurrent?: boolean;
-  /** Optional reveal animation delay applied per-tile by Phase 3. */
   revealDelayMsPerTile?: number;
-  /** Optional reveal completion callback per-tile (forwarded to Tile). */
   onTileRevealComplete?: (colIndex: number) => void;
 };
 
 export function Row({
   rowIndex,
   tiles,
-  shouldShake: _shouldShake,
-  isCurrent: _isCurrent,
   revealDelayMsPerTile,
   onTileRevealComplete,
 }: RowProps) {

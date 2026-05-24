@@ -2,17 +2,17 @@ import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Spacing, WordleColors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { LetterStatus } from '@/game/types';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export type TileProps = {
   rowIndex: number;
   colIndex: number;
-  letter: string; // single char, '' for empty
-  status: LetterStatus | null; // null = unrevealed (empty or filled-unrevealed)
-  /** No-op stub in Phase 2; Phase 3 wires reveal animation timing. */
+  letter: string;
+  status: LetterStatus | null;
+  /** Phase 3 scope-cut: animations dropped; reveal is static. */
   revealDelayMs?: number;
-  /** No-op stub in Phase 2; Phase 3 fires after the flip-reveal completes. */
+  /** Fires once when status transitions from null → revealed. */
   onRevealComplete?: () => void;
 };
 
@@ -28,7 +28,6 @@ export function Tile({
   colIndex,
   letter,
   status,
-  revealDelayMs: _revealDelayMs,
   onRevealComplete,
 }: TileProps) {
   const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
@@ -36,13 +35,8 @@ export function Tile({
   const hasLetter = letter.length > 0;
   const upper = letter.toUpperCase();
 
-  // Phase 2 stub: invoke completion immediately for any revealed tile.
-  // Phase 3 will replace this with a real reanimated flip + completion callback.
   useEffect(() => {
-    if (status != null && onRevealComplete) {
-      onRevealComplete();
-    }
-    // Intentionally only re-run on status change for the stub.
+    if (status != null && onRevealComplete) onRevealComplete();
   }, [status, onRevealComplete]);
 
   let backgroundColor: string = palette.emptyBackground;

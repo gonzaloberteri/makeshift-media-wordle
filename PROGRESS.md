@@ -32,6 +32,32 @@
 - Files modified: `src/constants/theme.ts` (added `WordleColors` light/dark palette + `WordleColorScheme` type), `src/components/app-tabs.web.tsx` (added a `__DEV__`-gated "Preview" TabTrigger so the dev route is reachable on web).
 - **Deferred to Phase 3:** iOS verification of the preview route. NativeTabs only declares `index` + `explore`; the dev route isn't reachable on native, and the spec accepts deferring iOS preview QA. iPhone 17 sim is booted (device 6D6A1ACA-…), ready for Phase 3 to verify Wordle on-device once `WordleScreen` is mounted at `index`.
 - **Phase 3 cleanup pending:** delete `src/app/dev/components-preview.tsx` AND the `__DEV__` TabTrigger in `src/components/app-tabs.web.tsx`.
+- Committed: `98f2d58 phase 2: presentational Wordle UI primitives + dev preview route`.
+
+## Phase 3 — Game wiring + animations — started 2026-05-24T23:10:51Z
+
+- Prereqs verified: web dev server on port 8081 (confirmed earlier); iOS sim iPhone 17 (device `6D6A1ACA-3560-44E0-84D0-D47EB9440814`) connected.
+
+### Verification — 2026-05-24T23:43:06Z — PASS (with scope-cut + deferred iOS-seed)
+
+**Web (chrome-devtools MCP):** all three scenarios pass.
+- `localhost:8081/?answer=apple` + type APPLE via physical keyboard dispatch → `You won!` banner, all 5 tiles green, restart visible. Screenshot: `.phase3-screenshots/web-win-apple.png`.
+- `localhost:8081/?answer=zebra` + 6 valid wrong guesses → `Game over — word was ZEBRA`, 6 rows submitted, restart visible. Screenshot: `.phase3-screenshots/web-loss-zebra.png`.
+- `localhost:8081/?answer=apple` + type XXXXX + Enter → error banner `Not in word list`. Screenshot: `.phase3-screenshots/web-invalid-xxxxx.png`.
+- Physical keyboard wired correctly (window.keydown for A-Z + Enter + Backspace, attached only on `Platform.OS === 'web'`).
+
+**iOS (maestro MCP, device 6D6A1ACA-…):** app launches, board renders, on-screen taps work end-to-end (typed CRANE → mixed results, key colors updated). `bun run test` → 25/25 (engine 22 + dev-seed 3).
+
+**Scope-cut applied (per SPEC §7 Phase 3 fallback "if animations stall, ship static color transitions"):** Tile/Row reanimated worklets crashed Hermes on iOS during typing. Replaced with static color transitions — props (`revealDelayMs`, `onRevealComplete`, `shouldShake`) preserved as no-ops. `animations.ts` still exports the timing constants for any future re-add. Web side never had the crash but uses the same simplified Tile/Row.
+
+**Deferred to Phase 4 (iOS seed deep link):** the SPEC's `makeshiftmedia://seed/<word>` deep link does not currently seed the iOS game. Tried multiple approaches in this phase: (a) `Linking.addEventListener('url', …)` inside `useWordle` to dispatch `restart`; (b) `src/app/seed/[word].tsx` route stub passing `initialAnswerOverride` to `WordleScreen`. Neither successfully seeded — most likely the `NativeTabs` layout in `src/components/app-tabs.tsx` only registers `index` and `explore` as triggers, so non-tab routes don't mount, and the async `getInitialURL` doesn't return until after `useReducer` lazy-init has already picked a random answer. Web works because URL is synchronous. Phase 4 will need to either (i) wire the seed via a route that NativeTabs accepts, (ii) restart-on-URL inside useWordle with deps that re-run, or (iii) ship iOS Maestro flows that don't rely on seeding (e.g. probe the current answer via testIDs, or just run loss/invalid flows that don't need a specific answer).
+
+- Files created: `src/features/wordle/{dev-seed.ts,dev-seed.test.ts,use-wordle.ts,animations.ts,WordleScreen.tsx}`, `src/app/seed/[word].tsx`.
+- Files modified: `src/app/index.tsx` (body → `<WordleScreen />`), `src/components/app-tabs.web.tsx` (removed Phase 2's `__DEV__` dev-preview TabTrigger), `src/features/wordle/{Tile,Row}.tsx` (scope-cut: static transitions), `.gitignore` (added `.tmp-screenshots/`).
+- Files deleted: `src/app/dev/components-preview.tsx` + parent directory (Phase 2 cleanup as planned).
+- Tests: `bun run test` → 25/25 (engine 22, dev-seed 3 including the `__DEV__`-false null case).
+
+
 
 
 
