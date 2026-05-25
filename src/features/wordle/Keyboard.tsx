@@ -55,7 +55,8 @@ export function Keyboard({ keyStatuses, onLetter, onEnter, onBackspace }: Keyboa
 const styles = StyleSheet.create({
   keyboard: {
     gap: Spacing.one,
-    alignSelf: 'stretch',
+    alignSelf: 'center',
+    width: '100%',
     maxWidth: 500,
   },
   row: {
