@@ -56,13 +56,7 @@ export function KeyboardKey({
   }
 
   const content = (
-    <View
-      style={[
-        styles.key,
-        wide ? styles.wide : styles.normal,
-        { backgroundColor },
-      ]}
-    >
+    <View style={[styles.key, wide ? styles.wide : styles.normal, { backgroundColor }]}>
       <Text
         style={[styles.label, wide ? styles.labelWide : null, { color: textColor }]}
         allowFontScaling={false}

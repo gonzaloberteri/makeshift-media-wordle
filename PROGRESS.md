@@ -41,6 +41,7 @@
 ### Verification — 2026-05-24T23:43:06Z — PASS (with scope-cut + deferred iOS-seed)
 
 **Web (chrome-devtools MCP):** all three scenarios pass.
+
 - `localhost:8081/?answer=apple` + type APPLE via physical keyboard dispatch → `You won!` banner, all 5 tiles green, restart visible. Screenshot: `.phase3-screenshots/web-win-apple.png`.
 - `localhost:8081/?answer=zebra` + 6 valid wrong guesses → `Game over — word was ZEBRA`, 6 rows submitted, restart visible. Screenshot: `.phase3-screenshots/web-loss-zebra.png`.
 - `localhost:8081/?answer=apple` + type XXXXX + Enter → error banner `Not in word list`. Screenshot: `.phase3-screenshots/web-invalid-xxxxx.png`.
@@ -67,14 +68,14 @@
 
 Independently re-ran via `maestro` CLI (the MCP had a stale chromedriver session from the subagent's run — known caveat, CLI is the source of truth):
 
-| Flow | Device | Run via | Outcome |
-| --- | --- | --- | --- |
-| `ios-win.yaml` | iPhone 17 (6D6A1ACA-…) | `maestro --udid … test` | PASS — `Assert that "You won!" is visible... COMPLETED` |
-| `ios-loss.yaml` | iPhone 17 | `maestro --udid … test` | PASS — `Assert that "Game over.*" is visible... COMPLETED` |
-| `ios-invalid-shake.yaml` | iPhone 17 | `maestro --udid … test` | PASS — `Assert that "Not in word list" is visible... COMPLETED` |
-| `web-win.yaml` | chromium (headless) | `maestro test --headless` | PASS |
-| `web-loss.yaml` | chromium | `maestro test --headless` | PASS |
-| `web-invalid-shake.yaml` | chromium | `maestro test --headless` | PASS |
+| Flow                     | Device                 | Run via                   | Outcome                                                         |
+| ------------------------ | ---------------------- | ------------------------- | --------------------------------------------------------------- |
+| `ios-win.yaml`           | iPhone 17 (6D6A1ACA-…) | `maestro --udid … test`   | PASS — `Assert that "You won!" is visible... COMPLETED`         |
+| `ios-loss.yaml`          | iPhone 17              | `maestro --udid … test`   | PASS — `Assert that "Game over.*" is visible... COMPLETED`      |
+| `ios-invalid-shake.yaml` | iPhone 17              | `maestro --udid … test`   | PASS — `Assert that "Not in word list" is visible... COMPLETED` |
+| `web-win.yaml`           | chromium (headless)    | `maestro test --headless` | PASS                                                            |
+| `web-loss.yaml`          | chromium               | `maestro test --headless` | PASS                                                            |
+| `web-invalid-shake.yaml` | chromium               | `maestro test --headless` | PASS                                                            |
 
 - iOS seed mechanism worked from Phase 3 code; the fix lived in the flow YAMLs (add `extendedWaitUntil` + `waitForAnimationToEnd` after `openLink` so the async `Linking` listener has time to dispatch `restart` before taps begin). No source changes in Phase 4.
 - Cross-platform selector convention discovered/documented: Maestro's iOS driver maps `id:` → `testID`; chromium driver maps `id:` → `aria-label`. SPEC §5 already requires both `testID` + `accessibilityLabel` on every element, so both flow styles work.
@@ -86,20 +87,13 @@ Independently re-ran via `maestro` CLI (the MCP had a stale chromedriver session
 
 Reported by each subagent (`<usage>` block on completion). Times are wall-clock subagent durations, not human time.
 
-| Phase | total_tokens | tool_uses | duration_ms | notes |
-| --- | ---: | ---: | ---: | --- |
-| 1 (1st attempt) | 0 | 14 | 148,699 | Blocked by content filter mid-stream; no output reached the orchestrator. |
-| 1 (retry) | 82,188 | 28 | 542,288 | Engine + 22 tests, green. |
-| 2 | 81,746 | 61 | 768,368 | UI primitives + preview route. |
-| 3 | 167,817 | 128 | 829,515 | Returned mid-iOS-verification; orchestrator completed the iOS path + scope-cut. |
-| 4 | 174,557 | 136 | 2,392,182 | 6/6 Maestro flows + iOS seed timing fix in YAML. |
-| **Total** | **506,308** | **367** | **4,681,052** (~78 min) | Plus the 148 s blocked attempt. |
+| Phase           | total_tokens | tool_uses |             duration_ms | notes                                                                           |
+| --------------- | -----------: | --------: | ----------------------: | ------------------------------------------------------------------------------- |
+| 1 (1st attempt) |            0 |        14 |                 148,699 | Blocked by content filter mid-stream; no output reached the orchestrator.       |
+| 1 (retry)       |       82,188 |        28 |                 542,288 | Engine + 22 tests, green.                                                       |
+| 2               |       81,746 |        61 |                 768,368 | UI primitives + preview route.                                                  |
+| 3               |      167,817 |       128 |                 829,515 | Returned mid-iOS-verification; orchestrator completed the iOS path + scope-cut. |
+| 4               |      174,557 |       136 |               2,392,182 | 6/6 Maestro flows + iOS seed timing fix in YAML.                                |
+| **Total**       |  **506,308** |   **367** | **4,681,052** (~78 min) | Plus the 148 s blocked attempt.                                                 |
 
 Orchestrator itself (main session) and human review time are not included.
-
-
-
-
-
-
-

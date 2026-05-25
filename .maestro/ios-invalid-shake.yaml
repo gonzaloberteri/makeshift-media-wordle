@@ -30,4 +30,4 @@ tags:
 # the shake animation itself (animations were scope-cut in Phase 3 anyway).
 - assertVisible:
     id: error-banner
-- assertVisible: "Not in word list"
+- assertVisible: 'Not in word list'

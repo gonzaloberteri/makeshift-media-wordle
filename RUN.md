@@ -21,7 +21,7 @@ phase's context is isolated. You orchestrate, verify, and log.
      running. Confirm port.
    - Phase 3: web dev server + an iOS simulator booted (`mcp__maestro__list_devices`).
    - Phase 4: same as Phase 3.
-   If any prereq is missing, ASK THE USER to set it up before continuing.
+     If any prereq is missing, ASK THE USER to set it up before continuing.
 
 2. Append a starting entry to PROGRESS.md:
    `## Phase N — <name> — started <ISO timestamp>`

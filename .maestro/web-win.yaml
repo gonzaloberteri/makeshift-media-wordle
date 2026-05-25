@@ -7,19 +7,19 @@ tags:
 # Seeds the answer via ?answer=apple (dev-only, __DEV__-gated).
 - openLink: ${MAESTRO_WEB_URL}/?answer=apple
 - assertVisible:
-    id: "Wordle board"
+    id: 'Wordle board'
 - tapOn:
-    id: "Key A"
+    id: 'Key A'
 - tapOn:
-    id: "Key P"
+    id: 'Key P'
 - tapOn:
-    id: "Key P"
+    id: 'Key P'
 - tapOn:
-    id: "Key L"
+    id: 'Key L'
 - tapOn:
-    id: "Key E"
+    id: 'Key E'
 - tapOn:
-    id: "Enter"
-- assertVisible: "You won!"
+    id: 'Enter'
+- assertVisible: 'You won!'
 - assertVisible:
-    id: "Play again"
+    id: 'Play again'

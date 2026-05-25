@@ -9,8 +9,6 @@ import { WordleScreen } from '@/features/wordle/WordleScreen';
 export default function SeedRoute() {
   const { word } = useLocalSearchParams<{ word: string }>();
   const seed =
-    typeof word === 'string' && /^[a-z]{5}$/.test(word.toLowerCase())
-      ? word.toLowerCase()
-      : null;
+    typeof word === 'string' && /^[a-z]{5}$/.test(word.toLowerCase()) ? word.toLowerCase() : null;
   return <WordleScreen initialAnswerOverride={__DEV__ ? seed : null} />;
 }

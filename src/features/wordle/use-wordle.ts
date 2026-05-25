@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { useEffect, useReducer, useRef } from 'react';
 import { Platform } from 'react-native';
 import * as Linking from 'expo-linking';
 
@@ -124,15 +124,15 @@ export function useWordle(opts?: { initialAnswerOverride?: string | null }) {
     initState(override && /^[a-z]{5}$/.test(override) ? override : pickInitialAnswer()),
   );
 
-  const onLetter = useCallback((letter: string) => {
+  const onLetter = (letter: string) => {
     dispatch({ type: 'press_letter', letter });
-  }, []);
+  };
 
-  const onBackspace = useCallback(() => {
+  const onBackspace = () => {
     dispatch({ type: 'press_backspace' });
-  }, []);
+  };
 
-  const onEnter = useCallback(() => {
+  const onEnter = () => {
     if (state.board.status !== 'in_progress') return;
     const validation = validateGuess(state.currentGuess, {
       wordLength: state.board.wordLength,
@@ -149,16 +149,25 @@ export function useWordle(opts?: { initialAnswerOverride?: string | null }) {
     }
     const rowIndex = state.board.guesses.length; // the row that was just submitted
     dispatch({ type: 'submit_ok', nextBoard: result.board, rowIndex });
-  }, [state.board, state.currentGuess]);
+  };
 
-  const onRestart = useCallback(() => {
+  const onRestart = () => {
     const seeded = getSeededAnswer();
     dispatch({ type: 'restart', answer: seeded ?? pickRandomAnswer() });
-  }, []);
+  };
 
-  const onClearReveal = useCallback((rowIndex: number) => {
+  const onClearReveal = (rowIndex: number) => {
     dispatch({ type: 'clear_reveal', rowIndex });
-  }, []);
+  };
+
+  // Latest-handler ref so the web keydown effect can stay registered with []
+  // deps while still calling the up-to-date onEnter/onBackspace/onLetter
+  // closures (which read fresh state on each render). The ref is updated in an
+  // effect, never during render.
+  const handlersRef = useRef({ onEnter, onBackspace, onLetter });
+  useEffect(() => {
+    handlersRef.current = { onEnter, onBackspace, onLetter };
+  });
 
   // Dev-only: on native, react to seed deep links by restarting with the seeded word.
   // `__DEV__` gate so Metro strips this in release builds.
@@ -194,23 +203,20 @@ export function useWordle(opts?: { initialAnswerOverride?: string | null }) {
       const key = e.key;
       if (key === 'Enter') {
         e.preventDefault();
-        onEnter();
+        handlersRef.current.onEnter();
       } else if (key === 'Backspace') {
         e.preventDefault();
-        onBackspace();
+        handlersRef.current.onBackspace();
       } else if (/^[a-zA-Z]$/.test(key)) {
         e.preventDefault();
-        onLetter(key.toLowerCase());
+        handlersRef.current.onLetter(key.toLowerCase());
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [onEnter, onBackspace, onLetter]);
+  }, []);
 
-  const errorMessage = useMemo(
-    () => (state.lastError ? describeError(state.lastError) : null),
-    [state.lastError],
-  );
+  const errorMessage = state.lastError ? describeError(state.lastError) : null;
 
   return {
     board: state.board,

@@ -20,12 +20,7 @@ export type RowProps = {
   onTileRevealComplete?: (colIndex: number) => void;
 };
 
-export function Row({
-  rowIndex,
-  tiles,
-  revealDelayMsPerTile,
-  onTileRevealComplete,
-}: RowProps) {
+export function Row({ rowIndex, tiles, revealDelayMsPerTile, onTileRevealComplete }: RowProps) {
   return (
     <View testID={`row-${rowIndex}`} style={styles.row}>
       {tiles.map((tile, colIndex) => (
@@ -36,9 +31,7 @@ export function Row({
           letter={tile.letter}
           status={tile.status}
           revealDelayMs={revealDelayMsPerTile != null ? revealDelayMsPerTile * colIndex : undefined}
-          onRevealComplete={
-            onTileRevealComplete ? () => onTileRevealComplete(colIndex) : undefined
-          }
+          onRevealComplete={onTileRevealComplete ? () => onTileRevealComplete(colIndex) : undefined}
         />
       ))}
     </View>

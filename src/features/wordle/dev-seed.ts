@@ -48,9 +48,7 @@ function readWebSeed(): string | null {
   if (typeof window === 'undefined' || !window.location) return null;
   try {
     const params = new URLSearchParams(window.location.search);
-    return (
-      normalize(params.get('answer')) ?? normalize(params.get('seed'))
-    );
+    return normalize(params.get('answer')) ?? normalize(params.get('seed'));
   } catch {
     return null;
   }

@@ -1,4 +1,3 @@
-import { useCallback, useMemo } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -33,22 +32,13 @@ export function WordleScreen({
   // Banner text:
   //  - errors take priority while game is in progress
   //  - win / loss banner once the game ends
-  const banner = useMemo(() => {
-    if (errorMessage) {
-      // We use errorTick as a "key" upstream so the same error retriggers a11y.
-      return { kind: 'error' as const, text: errorMessage };
-    }
-    if (board.status === 'won') {
-      return { kind: 'info' as const, text: 'You won!' };
-    }
-    if (board.status === 'lost') {
-      return {
-        kind: 'info' as const,
-        text: `Game over — word was ${board.answer.toUpperCase()}`,
-      };
-    }
-    return null;
-  }, [errorMessage, board.status, board.answer]);
+  const banner: { kind: 'error' | 'info'; text: string } | null = errorMessage
+    ? { kind: 'error', text: errorMessage }
+    : board.status === 'won'
+      ? { kind: 'info', text: 'You won!' }
+      : board.status === 'lost'
+        ? { kind: 'info', text: `Game over — word was ${board.answer.toUpperCase()}` }
+        : null;
 
   // Pass an index that flips between two values per error so React sees a
   // brand new "errorRowIndex" each time even when the user shakes twice in a
@@ -60,17 +50,14 @@ export function WordleScreen({
         board.guesses.length
       : null;
 
-  const handleTileRevealComplete = useCallback(
-    (colIndex: number) => {
-      // Once the last tile completes its reveal, clear the row so subsequent
-      // rows can reveal again without re-triggering this one.
-      if (revealRowIndex == null) return;
-      if (colIndex === board.wordLength - 1) {
-        onClearReveal(revealRowIndex);
-      }
-    },
-    [revealRowIndex, board.wordLength, onClearReveal],
-  );
+  const handleTileRevealComplete = (colIndex: number) => {
+    // Once the last tile completes its reveal, clear the row so subsequent
+    // rows can reveal again without re-triggering this one.
+    if (revealRowIndex == null) return;
+    if (colIndex === board.wordLength - 1) {
+      onClearReveal(revealRowIndex);
+    }
+  };
 
   // The web AppTabs render a floating top bar (~70px tall). Push content below it.
   const containerPadTop = Platform.select({ web: 90, default: Spacing.three });
@@ -87,9 +74,7 @@ export function WordleScreen({
           <View style={styles.bannerSlot}>
             {banner != null && (
               <StatusBanner
-                key={
-                  banner.kind === 'error' ? `err-${errorTick}` : `info-${board.status}`
-                }
+                key={banner.kind === 'error' ? `err-${errorTick}` : `info-${board.status}`}
                 kind={banner.kind}
                 text={banner.text}
               />

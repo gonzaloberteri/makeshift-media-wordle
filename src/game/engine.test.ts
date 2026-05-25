@@ -1,11 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import {
-  applyGuess,
-  createBoard,
-  submitGuess,
-  validateGuess,
-} from './engine';
+import { createBoard, submitGuess, validateGuess } from './engine';
 import type { BoardState, LetterStatus, SubmitResult } from './types';
 import { ALLOWED_SET, ANSWERS } from './wordlist';
 
@@ -84,9 +79,7 @@ describe('createBoard', () => {
     expect(board.guesses).toEqual([]);
     expect(board.status).toBe('in_progress');
     expect(Object.keys(board.keyStatuses).length).toBe(26);
-    expect(Object.values(board.keyStatuses).every((v) => v === 'unused')).toBe(
-      true,
-    );
+    expect(Object.values(board.keyStatuses).every((v) => v === 'unused')).toBe(true);
   });
 
   it('throws if the answer length does not match wordLength', () => {
@@ -114,8 +107,7 @@ describe('validateGuess', () => {
   it('rejects words not in the allowed wordSet as not_in_word_list', () => {
     const result = validateGuess('zzzzz', { wordLength: 5, wordSet });
     expect(result.ok).toBe(false);
-    if (!result.ok)
-      expect(result.error).toEqual({ kind: 'not_in_word_list' });
+    if (!result.ok) expect(result.error).toEqual({ kind: 'not_in_word_list' });
   });
 
   it('accepts and normalizes case/whitespace for valid guesses', () => {
@@ -132,13 +124,7 @@ describe('applyGuess / submitGuess — evaluation', () => {
     const result = ok(submitGuess(board, 'apple', PERMISSIVE_WORDSET));
     expect(result.transition).toBe('won');
     expect(result.board.status).toBe('won');
-    expect(statusesOf(result)).toEqual([
-      'correct',
-      'correct',
-      'correct',
-      'correct',
-      'correct',
-    ]);
+    expect(statusesOf(result)).toEqual(['correct', 'correct', 'correct', 'correct', 'correct']);
   });
 
   it('correct guess on the sixth try → transition won, not lost', () => {
@@ -164,25 +150,13 @@ describe('applyGuess / submitGuess — evaluation', () => {
     // e b → absent
     const board = createBoard({ answer: 'place' });
     const result = ok(submitGuess(board, 'plumb', PERMISSIVE_WORDSET));
-    expect(statusesOf(result)).toEqual([
-      'correct',
-      'correct',
-      'absent',
-      'absent',
-      'absent',
-    ]);
+    expect(statusesOf(result)).toEqual(['correct', 'correct', 'absent', 'absent', 'absent']);
 
     // answer "spore"  guess "spurs" → greens p+s, yellow s wraps? Use cleaner case:
     // answer "spore"  guess "spire" → s correct, p correct, i absent, r correct, e correct
     const board2 = createBoard({ answer: 'spore' });
     const r2 = ok(submitGuess(board2, 'spire', PERMISSIVE_WORDSET));
-    expect(statusesOf(r2)).toEqual([
-      'correct',
-      'correct',
-      'absent',
-      'correct',
-      'correct',
-    ]);
+    expect(statusesOf(r2)).toEqual(['correct', 'correct', 'absent', 'correct', 'correct']);
 
     // greens + yellows + greys in distinct positions: answer "crane" guess "place"
     // p c → absent
@@ -196,13 +170,7 @@ describe('applyGuess / submitGuess — evaluation', () => {
     // So: [absent, absent, correct, present, correct]
     const board3 = createBoard({ answer: 'crane' });
     const r3 = ok(submitGuess(board3, 'place', PERMISSIVE_WORDSET));
-    expect(statusesOf(r3)).toEqual([
-      'absent',
-      'absent',
-      'correct',
-      'present',
-      'correct',
-    ]);
+    expect(statusesOf(r3)).toEqual(['absent', 'absent', 'correct', 'present', 'correct']);
   });
 
   // The canonical duplicate-letter case from the spec.
@@ -215,13 +183,7 @@ describe('applyGuess / submitGuess — evaluation', () => {
     // pos4 y a → not in pool → absent
     const board = createBoard({ answer: 'aloha' });
     const result = ok(submitGuess(board, 'alloy', PERMISSIVE_WORDSET));
-    expect(statusesOf(result)).toEqual([
-      'correct',
-      'correct',
-      'absent',
-      'present',
-      'absent',
-    ]);
+    expect(statusesOf(result)).toEqual(['correct', 'correct', 'absent', 'present', 'absent']);
   });
 
   it('duplicate letters in the guess when answer also has duplicates (LLAMA vs ALOHA)', () => {
@@ -239,13 +201,7 @@ describe('applyGuess / submitGuess — evaluation', () => {
     //   pos3 m: 0 → absent
     const board = createBoard({ answer: 'aloha' });
     const result = ok(submitGuess(board, 'llama', PERMISSIVE_WORDSET));
-    expect(statusesOf(result)).toEqual([
-      'absent',
-      'correct',
-      'present',
-      'absent',
-      'correct',
-    ]);
+    expect(statusesOf(result)).toEqual(['absent', 'correct', 'present', 'absent', 'correct']);
   });
 
   it('keyStatuses aggregates with correct precedence — never downgrades from correct to present', () => {

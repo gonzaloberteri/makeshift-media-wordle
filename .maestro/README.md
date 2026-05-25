@@ -6,14 +6,14 @@ out of scope for this exercise.
 
 ## Flow inventory
 
-| File | Platform | Scenario | Seed | Verifies |
-| --- | --- | --- | --- | --- |
-| `ios-win.yaml` | iOS sim | Win on first guess | `apple` | `You won!` + `restart-button` |
-| `ios-loss.yaml` | iOS sim | Six wrong guesses | `zebra` | `Game over.*` + `restart-button` |
-| `ios-invalid-shake.yaml` | iOS sim | Invalid word | `apple` | `error-banner` + `Not in word list` |
-| `web-win.yaml` | chromium | Win on first guess | `apple` | `You won!` + `Play again` |
-| `web-loss.yaml` | chromium | Six wrong guesses | `zebra` | `Game over.*` + `Play again` |
-| `web-invalid-shake.yaml` | chromium | Invalid word | `apple` | `Not in word list` |
+| File                     | Platform | Scenario           | Seed    | Verifies                            |
+| ------------------------ | -------- | ------------------ | ------- | ----------------------------------- |
+| `ios-win.yaml`           | iOS sim  | Win on first guess | `apple` | `You won!` + `restart-button`       |
+| `ios-loss.yaml`          | iOS sim  | Six wrong guesses  | `zebra` | `Game over.*` + `restart-button`    |
+| `ios-invalid-shake.yaml` | iOS sim  | Invalid word       | `apple` | `error-banner` + `Not in word list` |
+| `web-win.yaml`           | chromium | Win on first guess | `apple` | `You won!` + `Play again`           |
+| `web-loss.yaml`          | chromium | Six wrong guesses  | `zebra` | `Game over.*` + `Play again`        |
+| `web-invalid-shake.yaml` | chromium | Invalid word       | `apple` | `Not in word list`                  |
 
 ## Prerequisites
 

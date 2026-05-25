@@ -72,6 +72,6 @@ tags:
 - tapOn: { id: key-enter }
 - waitForAnimationToEnd:
     timeout: 2000
-- assertVisible: "Game over.*"
+- assertVisible: 'Game over.*'
 - assertVisible:
     id: restart-button

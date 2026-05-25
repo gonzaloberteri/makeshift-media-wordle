@@ -33,6 +33,6 @@ tags:
     id: key-enter
 - waitForAnimationToEnd:
     timeout: 2000
-- assertVisible: "You won!"
+- assertVisible: 'You won!'
 - assertVisible:
     id: restart-button

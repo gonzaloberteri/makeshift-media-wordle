@@ -23,13 +23,7 @@ function describeStatus(status: LetterStatus | null, hasLetter: boolean): string
   return hasLetter ? 'filled' : 'empty';
 }
 
-export function Tile({
-  rowIndex,
-  colIndex,
-  letter,
-  status,
-  onRevealComplete,
-}: TileProps) {
+export function Tile({ rowIndex, colIndex, letter, status, onRevealComplete }: TileProps) {
   const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const palette = WordleColors[scheme].tile;
   const hasLetter = letter.length > 0;
@@ -93,7 +87,11 @@ const styles = StyleSheet.create({
   letter: {
     fontSize: 30,
     fontWeight: '700',
-    lineHeight: 34,
-    textTransform: 'uppercase',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    // Width-pinning the Text node guarantees the glyph centers within the
+    // tile. Without this, iOS renders bold SF capital "I" (a thin stroke
+    // with no serifs) off-bounds, making it appear invisible.
+    width: TILE_SIZE,
   },
 });

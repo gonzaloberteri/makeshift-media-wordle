@@ -25,11 +25,7 @@ function emptyKeyStatuses(): Record<string, KeyStatus> {
   return map;
 }
 
-export function createBoard(opts: {
-  answer: string;
-  wordLength?: 5;
-  maxGuesses?: 6;
-}): BoardState {
+export function createBoard(opts: { answer: string; wordLength?: 5; maxGuesses?: 6 }): BoardState {
   const wordLength = opts.wordLength ?? 5;
   const maxGuesses = opts.maxGuesses ?? 6;
   const answer = opts.answer.toLowerCase();
@@ -51,9 +47,7 @@ export function createBoard(opts: {
 export function validateGuess(
   raw: string,
   opts: { wordLength: number; wordSet: ReadonlySet<string> },
-):
-  | { ok: true; normalized: string }
-  | { ok: false; error: ValidationError } {
+): { ok: true; normalized: string } | { ok: false; error: ValidationError } {
   const normalized = (raw ?? '').trim().toLowerCase();
   if (normalized.length !== opts.wordLength) {
     return { ok: false, error: { kind: 'too_short' } };
@@ -113,10 +107,7 @@ function mergeKeyStatuses(
   return next;
 }
 
-export function applyGuess(
-  board: BoardState,
-  normalizedGuess: string,
-): SubmitResult {
+export function applyGuess(board: BoardState, normalizedGuess: string): SubmitResult {
   if (board.status !== 'in_progress') {
     return { ok: false, error: { kind: 'game_over' } };
   }

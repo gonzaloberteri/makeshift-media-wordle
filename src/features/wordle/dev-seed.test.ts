@@ -1,7 +1,11 @@
 /**
  * Per SPEC §3.6: `getSeededAnswer()` must return null when `__DEV__` is false,
  * so the production gate keeps the dev seed out of release builds.
+ *
+ * We use `require()` (not `import`) deliberately: the module reads `__DEV__` at
+ * eval time, so each test flips the flag, resets modules, then requires fresh.
  */
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
 
 // Mock the native modules we don't want jest to touch.

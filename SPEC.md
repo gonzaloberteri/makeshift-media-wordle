@@ -26,13 +26,13 @@ The repo (`/Users/gonza/dev/makeshift-media`) is a clean Expo SDK 56 scaffold (R
 
 ## 2. Deliverables, mapped to PDF questions
 
-| PDF question | Deliverable | Where |
-| --- | --- | --- |
-| Q1 — board data type | `BoardState`, `SubmittedGuess`, status enums | `src/game/types.ts` |
-| Q2 — guess function | `submitGuess(board, raw)` + `validateGuess` + `applyGuess` | `src/game/engine.ts` |
-| Q3 — tests | ts-jest unit suite, ~12-15 cases, both positive + negative | `src/game/engine.test.ts` |
-| Q4 — front-end | Tappable colored keyboard, flip-reveal tiles, shake-on-invalid, restart | `src/features/wordle/**`, mounted in `src/app/index.tsx` |
-| Extra credit | Maestro E2E on iOS + web | `.maestro/*.yaml` |
+| PDF question         | Deliverable                                                             | Where                                                    |
+| -------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------- |
+| Q1 — board data type | `BoardState`, `SubmittedGuess`, status enums                            | `src/game/types.ts`                                      |
+| Q2 — guess function  | `submitGuess(board, raw)` + `validateGuess` + `applyGuess`              | `src/game/engine.ts`                                     |
+| Q3 — tests           | ts-jest unit suite, ~12-15 cases, both positive + negative              | `src/game/engine.test.ts`                                |
+| Q4 — front-end       | Tappable colored keyboard, flip-reveal tiles, shake-on-invalid, restart | `src/features/wordle/**`, mounted in `src/app/index.tsx` |
+| Extra credit         | Maestro E2E on iOS + web                                                | `.maestro/*.yaml`                                        |
 
 ---
 
@@ -46,16 +46,21 @@ export type LetterStatus = 'correct' | 'present' | 'absent';
 export type KeyStatus = LetterStatus | 'unused';
 export type GameStatus = 'in_progress' | 'won' | 'lost';
 
-export interface EvaluatedTile { letter: string; status: LetterStatus }
-export interface SubmittedGuess { tiles: EvaluatedTile[] }
+export interface EvaluatedTile {
+  letter: string;
+  status: LetterStatus;
+}
+export interface SubmittedGuess {
+  tiles: EvaluatedTile[];
+}
 
 export interface BoardState {
-  answer: string;                          // lowercase, length === wordLength
-  wordLength: number;                      // 5
-  maxGuesses: number;                      // 6
-  guesses: SubmittedGuess[];               // submitted only, never the in-progress row
+  answer: string; // lowercase, length === wordLength
+  wordLength: number; // 5
+  maxGuesses: number; // 6
+  guesses: SubmittedGuess[]; // submitted only, never the in-progress row
   status: GameStatus;
-  keyStatuses: Record<string, KeyStatus>;  // 'a'..'z' aggregate
+  keyStatuses: Record<string, KeyStatus>; // 'a'..'z' aggregate
 }
 
 export type ValidationError =
@@ -64,18 +69,28 @@ export type ValidationError =
   | { kind: 'game_over' };
 
 export type SubmitResult =
-  | { ok: true; board: BoardState; evaluation: SubmittedGuess; transition: 'won' | 'lost' | 'continue' }
+  | {
+      ok: true;
+      board: BoardState;
+      evaluation: SubmittedGuess;
+      transition: 'won' | 'lost' | 'continue';
+    }
   | { ok: false; error: ValidationError };
 ```
 
 ```ts
 // src/game/engine.ts — exported surface
 export function createBoard(opts: { answer: string; wordLength?: 5; maxGuesses?: 6 }): BoardState;
-export function validateGuess(raw: string, opts: { wordLength: number; wordSet: ReadonlySet<string> }):
-  | { ok: true; normalized: string }
-  | { ok: false; error: ValidationError };
+export function validateGuess(
+  raw: string,
+  opts: { wordLength: number; wordSet: ReadonlySet<string> },
+): { ok: true; normalized: string } | { ok: false; error: ValidationError };
 export function applyGuess(board: BoardState, normalizedGuess: string): SubmitResult;
-export function submitGuess(board: BoardState, raw: string, wordSet: ReadonlySet<string>): SubmitResult;
+export function submitGuess(
+  board: BoardState,
+  raw: string,
+  wordSet: ReadonlySet<string>,
+): SubmitResult;
 ```
 
 **Split rationale:** `validateGuess` lets the UI shake the row for invalid input without mutating state; `applyGuess` is the pure reducer step; `submitGuess` is the convenience wrapper used by the hook.
@@ -106,23 +121,23 @@ type Action =
 
 interface UiState {
   board: BoardState;
-  currentGuess: string;                    // 0..wordLength chars, UI-only
-  lastError: ValidationError | null;       // drives shake; cleared on next keypress
-  revealRowIndex: number | null;           // signals reveal anim; nulled after completion
+  currentGuess: string; // 0..wordLength chars, UI-only
+  lastError: ValidationError | null; // drives shake; cleared on next keypress
+  revealRowIndex: number | null; // signals reveal anim; nulled after completion
 }
 ```
 
 ### 3.4 Components (visual primitives, dumb)
 
-| File | Responsibility |
-| --- | --- |
-| `Tile.tsx` | Single cell. Owns flip-reveal `SharedValue`. Props: `letter`, `status \| null`, `revealDelayMs`, `onRevealComplete`. |
-| `Row.tsx` | 5 tiles. Owns shake `translateX`. Props: `tiles`, `shouldShake`, `isCurrent`. |
-| `Board.tsx` | 6 rows. Pure layout. Props: `guesses`, `currentGuess`, `maxGuesses`, `wordLength`, `errorRowIndex`, `revealRowIndex`. |
-| `KeyboardKey.tsx` | One key. Props: `label`, `status`, `onPress`, `wide?`. |
-| `Keyboard.tsx` | QWERTY layout. Props: `keyStatuses`, `onLetter`, `onEnter`, `onBackspace`. |
-| `StatusBanner.tsx` | "You won" / "Game over — word was APPLE" / nothing. |
-| `RestartButton.tsx` | Tap → dispatch `restart` with fresh random answer. |
+| File                | Responsibility                                                                                                        |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `Tile.tsx`          | Single cell. Owns flip-reveal `SharedValue`. Props: `letter`, `status \| null`, `revealDelayMs`, `onRevealComplete`.  |
+| `Row.tsx`           | 5 tiles. Owns shake `translateX`. Props: `tiles`, `shouldShake`, `isCurrent`.                                         |
+| `Board.tsx`         | 6 rows. Pure layout. Props: `guesses`, `currentGuess`, `maxGuesses`, `wordLength`, `errorRowIndex`, `revealRowIndex`. |
+| `KeyboardKey.tsx`   | One key. Props: `label`, `status`, `onPress`, `wide?`.                                                                |
+| `Keyboard.tsx`      | QWERTY layout. Props: `keyStatuses`, `onLetter`, `onEnter`, `onBackspace`.                                            |
+| `StatusBanner.tsx`  | "You won" / "Game over — word was APPLE" / nothing.                                                                   |
+| `RestartButton.tsx` | Tap → dispatch `restart` with fresh random answer.                                                                    |
 
 Phase 2 ships these as **purely presentational** with `testID` + `accessibilityLabel` baked in. Phase 3 wires them through `useWordle()`.
 
@@ -199,17 +214,17 @@ SPEC.md                                 # this file, moved here after approval
 
 ### Naming convention
 
-| Element | `testID` | `accessibilityLabel` |
-| --- | --- | --- |
-| Board container | `board` | `"Wordle board"` |
-| Row | `row-${rowIndex}` | — |
-| Tile | `tile-${rowIndex}-${colIndex}` | `"row N column M, <status or empty>, <letter or empty>"` |
-| Letter key | `key-${letter}` (lowercase) | `"Key <LETTER>"` |
-| Enter | `key-enter` | `"Enter"` |
-| Backspace | `key-backspace` | `"Backspace"` |
-| Status banner | `status-banner` | banner text |
-| Error banner | `error-banner` | error text |
-| Restart | `restart-button` | `"Play again"` |
+| Element         | `testID`                       | `accessibilityLabel`                                     |
+| --------------- | ------------------------------ | -------------------------------------------------------- |
+| Board container | `board`                        | `"Wordle board"`                                         |
+| Row             | `row-${rowIndex}`              | —                                                        |
+| Tile            | `tile-${rowIndex}-${colIndex}` | `"row N column M, <status or empty>, <letter or empty>"` |
+| Letter key      | `key-${letter}` (lowercase)    | `"Key <LETTER>"`                                         |
+| Enter           | `key-enter`                    | `"Enter"`                                                |
+| Backspace       | `key-backspace`                | `"Backspace"`                                            |
+| Status banner   | `status-banner`                | banner text                                              |
+| Error banner    | `error-banner`                 | error text                                               |
+| Restart         | `restart-button`               | `"Play again"`                                           |
 
 In Maestro flows, prefer `tapOn: { id: "key-a" }` over text matching for keys (avoids collisions with same-letter tiles).
 
@@ -236,6 +251,7 @@ module.exports = {
 Required cases (~12-15 total, name them descriptively):
 
 **Positive**
+
 - correct guess on first try → `transition: 'won'`, `status: 'won'`, all tiles `correct`
 - correct guess on sixth try → `transition: 'won'` (not `lost`)
 - partial match: greens + yellows + greys distinct positions
@@ -244,6 +260,7 @@ Required cases (~12-15 total, name them descriptively):
 - `keyStatuses` aggregates with correct precedence (no downgrade from correct → present)
 
 **Negative**
+
 - guess shorter than `wordLength` → `not ok`, error `too_short`
 - guess not in allowed list → `not ok`, error `not_in_word_list`
 - guess after `status === 'won'` → `not ok`, error `game_over`
@@ -254,6 +271,7 @@ Required cases (~12-15 total, name them descriptively):
 Maestro flows, one YAML per scenario × platform (6 total). Local runs only; cloud is out of scope.
 
 Three scenarios:
+
 1. **happy-path win** — seed answer `apple`, type it, assert `"You won"`
 2. **full-loss** — seed answer `zebra`, type 6 valid wrong guesses, assert `"Game over"` + revealed answer
 3. **invalid-word shake** — type `xxxxx`, assert error banner visible (skip asserting the shake animation itself)
@@ -276,6 +294,7 @@ Each phase = a fresh Claude session with a clean context budget. Phase prompts b
 **Do not read:** any UI files; no need.
 
 **Tasks:**
+
 1. `bun add -d jest @types/jest ts-jest`. Verify `bunx jest --version`.
 2. Create `jest.config.js` per §6.1. Add `"test": "jest"` to `package.json`.
 3. Create `src/game/types.ts`, `src/game/engine.ts`, `src/game/wordlist/{answers,allowed,index}.ts`, `src/game/keyboard-layout.ts`.
@@ -295,6 +314,7 @@ Each phase = a fresh Claude session with a clean context budget. Phase prompts b
 **Do not read:** engine internals; word lists.
 
 **Tasks:**
+
 1. Extend `src/constants/theme.ts` with `WordleColors` for light/dark: tile background empty / filled-unrevealed / correct / present / absent; key background unused / correct / present / absent; tile/key text colors for each state.
 2. Build `Tile`, `Row`, `Board`, `KeyboardKey`, `Keyboard`, `StatusBanner`, `RestartButton` per §3.4. All `testID`s + `accessibilityLabel`s baked in per §5.
 3. `Tile` accepts animation stub props (`revealDelayMs?`, `onRevealComplete?`) as no-ops. `Row` accepts `shouldShake?` as a no-op.
@@ -313,6 +333,7 @@ Each phase = a fresh Claude session with a clean context budget. Phase prompts b
 **Do not read:** word-list contents; engine internals beyond the exported types.
 
 **Tasks:**
+
 1. Implement `src/features/wordle/dev-seed.ts` per §3.6. Wire `Linking` listener on native; `URLSearchParams` on web.
 2. Implement `src/features/wordle/use-wordle.ts` — `useReducer` over `UiState` per §3.3. Initialize answer via `getSeededAnswer() ?? pickRandomAnswer()`. Expose `{ board, currentGuess, lastError, revealRowIndex, onLetter, onBackspace, onEnter, onRestart }`.
 3. Implement `src/features/wordle/animations.ts` — shared reanimated 4 configs for flip (timing 350ms, staggered 250ms per tile), shake (sequence of translateX), win bounce (sequence of translateY on winning row).
@@ -339,6 +360,7 @@ Each phase = a fresh Claude session with a clean context budget. Phase prompts b
 **Do not read:** game source.
 
 **Tasks:**
+
 1. `list_devices` (maestro MCP). Confirm an iOS simulator boots and `chromium` is available. If not, ask the user to boot one.
 2. Confirm `bun run web` is running on a known port (default 8081); set `MAESTRO_WEB_URL` if different.
 3. Write the six YAML files per §6.2:

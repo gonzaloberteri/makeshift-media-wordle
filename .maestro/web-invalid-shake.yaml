@@ -6,14 +6,14 @@ tags:
 ---
 - openLink: ${MAESTRO_WEB_URL}/?answer=apple
 - assertVisible:
-    id: "Wordle board"
+    id: 'Wordle board'
 # Type XXXXX — not in the allowed word list.
-- tapOn: { id: "Key X" }
-- tapOn: { id: "Key X" }
-- tapOn: { id: "Key X" }
-- tapOn: { id: "Key X" }
-- tapOn: { id: "Key X" }
-- tapOn: { id: "Enter" }
+- tapOn: { id: 'Key X' }
+- tapOn: { id: 'Key X' }
+- tapOn: { id: 'Key X' }
+- tapOn: { id: 'Key X' }
+- tapOn: { id: 'Key X' }
+- tapOn: { id: 'Enter' }
 # Per SPEC §6.2 we assert the error banner; we don't try to assert the shake
 # animation itself (animations were scope-cut in Phase 3 anyway).
-- assertVisible: "Not in word list"
+- assertVisible: 'Not in word list'
