@@ -151,34 +151,20 @@ flowchart LR
 | `PROGRESS.md` | Append-only audit trail. One section per phase: prereqs, subagent token usage, verification outcome, files touched, commits, and any deferred work.           | Grows during execution                      |
 | `ANALYSIS.md` | Post-hoc summary mapping each PDF question to the file/line/test that answers it. Written for the interview review.                                           | Written after Phase 4 verification          |
 
-### Execution pattern (one phase)
+### Execution pattern
 
 ```mermaid
-sequenceDiagram
-    participant U as User
-    participant O as Orchestrator<br/>(main session)
-    participant S as Subagent<br/>(general-purpose)
-    participant FS as Filesystem +<br/>verification tools
+flowchart LR
+    P["Initial prompt<br/><i>(PDF + intent)</i>"]
+    S["SPEC.md"]
+    R["RUN.md"]
+    PR["PROGRESS.md"]
+    A["ANALYSIS.md"]
 
-    U->>O: Paste RUN.md prompt
-    O->>O: Read SPEC.md, pick next phase
-    O->>U: Confirm prereqs (sim booted, web running)
-    U-->>O: OK
-
-    O->>PROGRESS.md: Append "Phase N — started"
-    O->>S: Spawn with phase Tasks +<br/>Done-when + Handoff contract
-    S->>FS: Read SPEC sections, write code, run tests
-    S-->>O: Structured report (files, commands, self-check)
-
-    O->>FS: Independently verify<br/>(bun test, chrome-devtools MCP,<br/>maestro inspect_screen)
-    alt verification passes
-        O->>PROGRESS.md: Append PASS + evidence
-        O->>O: Advance to Phase N+1
-    else verification fails
-        O->>S: ONE corrective subagent (scoped fix)
-        S-->>O: Retry report
-        O->>FS: Re-verify; stop on second failure
-    end
+    P -->|"analyse &amp; plan"| S
+    S -->|"derive orchestrator"| R
+    R -->|"execute phases,<br/>append audit trail"| PR
+    PR -->|"distil for review"| A
 ```
 
 ### Why this shape
