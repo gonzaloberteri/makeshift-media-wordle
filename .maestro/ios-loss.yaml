@@ -1,0 +1,77 @@
+appId: com.makeshiftmedia.wordle
+name: ios-loss
+tags:
+  - ios
+  - loss
+---
+- launchApp:
+    appId: com.makeshiftmedia.wordle
+    stopApp: true
+- extendedWaitUntil:
+    visible:
+      id: board
+    timeout: 10000
+# Dev-only deep link sets the answer to "zebra".
+- openLink: makeshiftmedia://seed/zebra
+- waitForAnimationToEnd:
+    timeout: 5000
+- assertVisible:
+    id: board
+# Six wrong valid guesses to exhaust the board.
+# 1) APPLE
+- tapOn: { id: key-a }
+- tapOn: { id: key-p }
+- tapOn: { id: key-p }
+- tapOn: { id: key-l }
+- tapOn: { id: key-e }
+- tapOn: { id: key-enter }
+- waitForAnimationToEnd:
+    timeout: 1500
+# 2) BREAD
+- tapOn: { id: key-b }
+- tapOn: { id: key-r }
+- tapOn: { id: key-e }
+- tapOn: { id: key-a }
+- tapOn: { id: key-d }
+- tapOn: { id: key-enter }
+- waitForAnimationToEnd:
+    timeout: 1500
+# 3) BRICK
+- tapOn: { id: key-b }
+- tapOn: { id: key-r }
+- tapOn: { id: key-i }
+- tapOn: { id: key-c }
+- tapOn: { id: key-k }
+- tapOn: { id: key-enter }
+- waitForAnimationToEnd:
+    timeout: 1500
+# 4) CHAIR
+- tapOn: { id: key-c }
+- tapOn: { id: key-h }
+- tapOn: { id: key-a }
+- tapOn: { id: key-i }
+- tapOn: { id: key-r }
+- tapOn: { id: key-enter }
+- waitForAnimationToEnd:
+    timeout: 1500
+# 5) CLOUD
+- tapOn: { id: key-c }
+- tapOn: { id: key-l }
+- tapOn: { id: key-o }
+- tapOn: { id: key-u }
+- tapOn: { id: key-d }
+- tapOn: { id: key-enter }
+- waitForAnimationToEnd:
+    timeout: 1500
+# 6) CRANE
+- tapOn: { id: key-c }
+- tapOn: { id: key-r }
+- tapOn: { id: key-a }
+- tapOn: { id: key-n }
+- tapOn: { id: key-e }
+- tapOn: { id: key-enter }
+- waitForAnimationToEnd:
+    timeout: 2000
+- assertVisible: "Game over.*"
+- assertVisible:
+    id: restart-button

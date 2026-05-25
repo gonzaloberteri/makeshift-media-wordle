@@ -1,0 +1,25 @@
+url: ${MAESTRO_WEB_URL}
+name: web-win
+tags:
+  - web
+  - win
+---
+# Seeds the answer via ?answer=apple (dev-only, __DEV__-gated).
+- openLink: ${MAESTRO_WEB_URL}/?answer=apple
+- assertVisible:
+    id: "Wordle board"
+- tapOn:
+    id: "Key A"
+- tapOn:
+    id: "Key P"
+- tapOn:
+    id: "Key P"
+- tapOn:
+    id: "Key L"
+- tapOn:
+    id: "Key E"
+- tapOn:
+    id: "Enter"
+- assertVisible: "You won!"
+- assertVisible:
+    id: "Play again"

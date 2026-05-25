@@ -1,0 +1,33 @@
+appId: com.makeshiftmedia.wordle
+name: ios-invalid-shake
+tags:
+  - ios
+  - invalid
+---
+- launchApp:
+    appId: com.makeshiftmedia.wordle
+    stopApp: true
+- extendedWaitUntil:
+    visible:
+      id: board
+    timeout: 10000
+# Seed isn't strictly required for this scenario but keeps the test deterministic.
+- openLink: makeshiftmedia://seed/apple
+- waitForAnimationToEnd:
+    timeout: 5000
+- assertVisible:
+    id: board
+# Type XXXXX — not in the allowed word list.
+- tapOn: { id: key-x }
+- tapOn: { id: key-x }
+- tapOn: { id: key-x }
+- tapOn: { id: key-x }
+- tapOn: { id: key-x }
+- tapOn: { id: key-enter }
+- waitForAnimationToEnd:
+    timeout: 1500
+# Per SPEC §6.2 we assert the error banner appeared. We do NOT try to assert
+# the shake animation itself (animations were scope-cut in Phase 3 anyway).
+- assertVisible:
+    id: error-banner
+- assertVisible: "Not in word list"

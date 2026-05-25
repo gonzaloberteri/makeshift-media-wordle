@@ -56,6 +56,48 @@
 - Files modified: `src/app/index.tsx` (body → `<WordleScreen />`), `src/components/app-tabs.web.tsx` (removed Phase 2's `__DEV__` dev-preview TabTrigger), `src/features/wordle/{Tile,Row}.tsx` (scope-cut: static transitions), `.gitignore` (added `.tmp-screenshots/`).
 - Files deleted: `src/app/dev/components-preview.tsx` + parent directory (Phase 2 cleanup as planned).
 - Tests: `bun run test` → 25/25 (engine 22, dev-seed 3 including the `__DEV__`-false null case).
+- Committed: `8d07587 phase 3: playable Wordle on web + iOS, animations scope-cut`.
+
+## Phase 4 — Maestro E2E flows — started 2026-05-24T23:44:27Z
+
+- Prereqs verified: web dev server on 8081, iOS sim iPhone 17 (6D6A1ACA-…) booted, `chromium` device available.
+- Open item from Phase 3 to resolve here: iOS deep-link seed (`makeshiftmedia://seed/<word>`) doesn't currently set the answer.
+
+### Verification — 2026-05-25T00:30:45Z — PASS (6/6 flows green)
+
+Independently re-ran via `maestro` CLI (the MCP had a stale chromedriver session from the subagent's run — known caveat, CLI is the source of truth):
+
+| Flow | Device | Run via | Outcome |
+| --- | --- | --- | --- |
+| `ios-win.yaml` | iPhone 17 (6D6A1ACA-…) | `maestro --udid … test` | PASS — `Assert that "You won!" is visible... COMPLETED` |
+| `ios-loss.yaml` | iPhone 17 | `maestro --udid … test` | PASS — `Assert that "Game over.*" is visible... COMPLETED` |
+| `ios-invalid-shake.yaml` | iPhone 17 | `maestro --udid … test` | PASS — `Assert that "Not in word list" is visible... COMPLETED` |
+| `web-win.yaml` | chromium (headless) | `maestro test --headless` | PASS |
+| `web-loss.yaml` | chromium | `maestro test --headless` | PASS |
+| `web-invalid-shake.yaml` | chromium | `maestro test --headless` | PASS |
+
+- iOS seed mechanism worked from Phase 3 code; the fix lived in the flow YAMLs (add `extendedWaitUntil` + `waitForAnimationToEnd` after `openLink` so the async `Linking` listener has time to dispatch `restart` before taps begin). No source changes in Phase 4.
+- Cross-platform selector convention discovered/documented: Maestro's iOS driver maps `id:` → `testID`; chromium driver maps `id:` → `aria-label`. SPEC §5 already requires both `testID` + `accessibilityLabel` on every element, so both flow styles work.
+- `bun run test` → 25/25 (unchanged).
+- Files created: `.maestro/{ios-win,ios-loss,ios-invalid-shake,web-win,web-loss,web-invalid-shake}.yaml` + `.maestro/README.md`. No source files modified.
+- Caveat: maestro MCP chromedriver session cached an aborted run; future MCP-based runs may need an MCP restart. CLI runs unaffected.
+
+## Orchestrator log — subagent token usage + runtime
+
+Reported by each subagent (`<usage>` block on completion). Times are wall-clock subagent durations, not human time.
+
+| Phase | total_tokens | tool_uses | duration_ms | notes |
+| --- | ---: | ---: | ---: | --- |
+| 1 (1st attempt) | 0 | 14 | 148,699 | Blocked by content filter mid-stream; no output reached the orchestrator. |
+| 1 (retry) | 82,188 | 28 | 542,288 | Engine + 22 tests, green. |
+| 2 | 81,746 | 61 | 768,368 | UI primitives + preview route. |
+| 3 | 167,817 | 128 | 829,515 | Returned mid-iOS-verification; orchestrator completed the iOS path + scope-cut. |
+| 4 | 174,557 | 136 | 2,392,182 | 6/6 Maestro flows + iOS seed timing fix in YAML. |
+| **Total** | **506,308** | **367** | **4,681,052** (~78 min) | Plus the 148 s blocked attempt. |
+
+Orchestrator itself (main session) and human review time are not included.
+
+
 
 
 

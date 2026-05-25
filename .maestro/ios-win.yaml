@@ -1,0 +1,38 @@
+appId: com.makeshiftmedia.wordle
+name: ios-win
+tags:
+  - ios
+  - win
+---
+# Cold-launch the app so the URL handler can register before the deep link.
+- launchApp:
+    appId: com.makeshiftmedia.wordle
+    stopApp: true
+- extendedWaitUntil:
+    visible:
+      id: board
+    timeout: 10000
+# Dev-only deep link sets the answer to "apple" before we type.
+- openLink: makeshiftmedia://seed/apple
+- waitForAnimationToEnd:
+    timeout: 5000
+- assertVisible:
+    id: board
+# Type APPLE and submit.
+- tapOn:
+    id: key-a
+- tapOn:
+    id: key-p
+- tapOn:
+    id: key-p
+- tapOn:
+    id: key-l
+- tapOn:
+    id: key-e
+- tapOn:
+    id: key-enter
+- waitForAnimationToEnd:
+    timeout: 2000
+- assertVisible: "You won!"
+- assertVisible:
+    id: restart-button

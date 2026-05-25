@@ -1,0 +1,55 @@
+url: ${MAESTRO_WEB_URL}
+name: web-loss
+tags:
+  - web
+  - loss
+---
+- openLink: ${MAESTRO_WEB_URL}/?answer=zebra
+- assertVisible:
+    id: "Wordle board"
+# Six wrong valid guesses to exhaust the board.
+# 1) APPLE
+- tapOn: { id: "Key A" }
+- tapOn: { id: "Key P" }
+- tapOn: { id: "Key P" }
+- tapOn: { id: "Key L" }
+- tapOn: { id: "Key E" }
+- tapOn: { id: "Enter" }
+# 2) BREAD
+- tapOn: { id: "Key B" }
+- tapOn: { id: "Key R" }
+- tapOn: { id: "Key E" }
+- tapOn: { id: "Key A" }
+- tapOn: { id: "Key D" }
+- tapOn: { id: "Enter" }
+# 3) BRICK
+- tapOn: { id: "Key B" }
+- tapOn: { id: "Key R" }
+- tapOn: { id: "Key I" }
+- tapOn: { id: "Key C" }
+- tapOn: { id: "Key K" }
+- tapOn: { id: "Enter" }
+# 4) CHAIR
+- tapOn: { id: "Key C" }
+- tapOn: { id: "Key H" }
+- tapOn: { id: "Key A" }
+- tapOn: { id: "Key I" }
+- tapOn: { id: "Key R" }
+- tapOn: { id: "Enter" }
+# 5) CLOUD
+- tapOn: { id: "Key C" }
+- tapOn: { id: "Key L" }
+- tapOn: { id: "Key O" }
+- tapOn: { id: "Key U" }
+- tapOn: { id: "Key D" }
+- tapOn: { id: "Enter" }
+# 6) CRANE
+- tapOn: { id: "Key C" }
+- tapOn: { id: "Key R" }
+- tapOn: { id: "Key A" }
+- tapOn: { id: "Key N" }
+- tapOn: { id: "Key E" }
+- tapOn: { id: "Enter" }
+- assertVisible: "Game over.*"
+- assertVisible:
+    id: "Play again"
