@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "makeshift-media",
+    "name": "Wordle",
     "slug": "makeshift-media",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,7 +8,7 @@
     "scheme": "makeshiftmedia",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "icon": "./assets/images/icon.png",
       "bundleIdentifier": "com.makeshiftmedia.wordle"
     },
     "android": {
@@ -30,6 +30,10 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#208AEF",
+          "ios": {
+            "image": "./assets/images/splash-icon.png",
+            "imageWidth": 200
+          },
           "android": {
             "image": "./assets/images/splash-icon.png",
             "imageWidth": 76
